@@ -1,0 +1,7 @@
+[compileoptions]
+buildtype = EXECUTABLE
+out = bin
+outname = AbstractSchematicDrawer
+buildtool = $DEEBUILDER.COMPILEREXEPATH @build.rf -funittest
+extraOptions = -o$/DEEBUILDER.OUTPUTEXE\n$/DEEBUILDER.SRCLIBS.-I\n$/DEEBUILDER.SRCFOLDERS.-I\n$/DEEBUILDER.SRCMODULES
+

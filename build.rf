@@ -1,0 +1,13 @@
+-o"bin/AbstractSchematicDrawer"
+
+-I"src"
+
+"src/MathConsts.d"
+"src/Measurable1D.d"
+"src/Movable.d"
+"src/Point.d"
+"src/Rotable.d"
+"src/Scalable.d"
+"src/Segment.d"
+"src/Shape.d"
+"src/Vector.d"
