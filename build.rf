@@ -1,7 +1,16 @@
--o"bin/AbstractSchematicDrawer"
+-of"bin/AbstractSchematicDrawer"
 
 -I"src"
 
+"src/DUnit/source/dunit/error.d"
+"src/DUnit/source/dunit/mockable.d"
+"src/DUnit/source/dunit/moduleunittester.d"
+"src/DUnit/source/dunit/output/console.d"
+"src/DUnit/source/dunit/reflection.d"
+"src/DUnit/source/dunit/result/moduleresult.d"
+"src/DUnit/source/dunit/result/moduleresultcollection.d"
+"src/DUnit/source/dunit/toolkit.d"
+"src/DUnit/source/example.d"
 "src/MathConsts.d"
 "src/Measurable1D.d"
 "src/Movable.d"

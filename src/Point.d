@@ -1,11 +1,15 @@
 import std.math;
 import std.conv;
 
+
 import Movable;
+import dunit.mockable;
+
+
 
 /** Class Point definition. A Pointer as a movable behavior. */
 class Point : Movable{
-
+ 
 private:
 	double x;
 	double y;
@@ -22,7 +26,7 @@ public:
 	this(Point other){
 		x = other.x;
 		y = other.y;
-	}
+	}  
 	
 	/** Allows to read point's X coordinate.  */
 	double getX(){
@@ -61,39 +65,30 @@ public:
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
 	}
+	
+
 }
 
 
 unittest{
-	import std.stdio;
-	writeln("\nPoint unittest");
-	writeln("--------------\n\n");
-	Point p1 = new Point(0,4);
+	import dunit.toolkit;
+	
+	Point p = new Point(0,4);
 	Point p2 = new Point(-3,2);
 	
-	write("Test basic operations...");
-	assert(p1.getX() == 0, "(0,4) getX expected to be 0");
-	assert(p1.getY() == 4, "(0,4) getX expected to be 4");
-	assert(p2.getX() == -3,"(-3,2) getX expected to be -3");
-	assert(p2.getY() == 2, "(-3,2) getX expected to be 2");
-	writeln("Ok");
+	p.getX().assertEqual(0);
+	p.getY().assertEqual(4);
+	p2.getX().assertEqual(-3);
+	p2.getY().assertEqual(2);
+	 
+	p.distance(p2).assertEqual(3.6055);
+	p2.distance(p).assertEqual(3.6055);
 	
-	write("Test Distance Calculation...");
 	Vector v = new Vector(new Point(0,0), new Point(2,1)); 
-	assert(abs( p1.distance(p2) -3.60555) < 0.00001, "(0,4) distance from (-3, 2) is supposed to be 3.6055\n indeed the calculated is " ~ to!string(p1.distance(p2))   );
-	writeln("Ok");
+	p.move(v);
+	p.distance(new Point(2, 5)).assertEqual(0);
 	
-	write("Test Move Operation...");
-	p1.move(v);
-	assert(abs(p1.distance(new Point(2, 5))) < 0.00001, "Moving (0,4) by (2,1) expected resulting distance from (2,5) about zero indeed the calculated is " ~ to!string(p1.distance(new Point(2,5))) );
-	writeln("Ok");
+	assertTrue(p2 == new Point (-3,2));
 	
-	write("Test equality operator...");
-	assert (p2 == new Point (-3,2), "broken equality operator");
-	writeln("Ok");
-	
-	
-	
-	
-
 }
+

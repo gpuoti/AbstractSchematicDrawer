@@ -100,6 +100,65 @@ int main(string[] args){
 	
 }
 
+version(unittest):
+	void vectoreTest(Vector v, double deltax, double deltay, double mod){
+		import dunit.toolkit;
+	import Point;
+	Vector v = new Vector(new Point(0,0), new Point (12, 0));
+	Vector v2 = new Vector(new Point(0,0), new Point(5,0));
+	
+	v.dx().assertEqual(deltax);
+	v.dy().assertEqual(deltay);
+	v.getModule().assertEqual(mod);
+	
+	v.scale(1.5);
+	v.getModule().assertApprox(mod*1.5);
+	v.scale(0.6666667);
+	v.getModule().assertEqual(mod);
+	
+	
+	//v.assertEqual(v+v2-v2);
+	
+	v = v+v2;
+	v.dx().assertEqual(5+deltax);
+	v.dy().assertEqual(deltay);
+	v.getModule.assertEqual(mo);
+	
+	v = v-v2;
+	v.dx().assertEqual(12);
+	v.dy().assertEqual(0);
+	v.getModule().assertEqual(12);	
+
+	}  
+
+unittest{
+	import dunit.toolkit;
+	import Point;
+	Vector v = new Vector(new Point(0,0), new Point (12, 0));
+	Vector v2 = new Vector(new Point(0,0), new Point(5,0));
+	
+	v.dx().assertEqual(12);
+	v.dy().assertEqual(0);
+	v.getModule().assertEqual(12);
+	
+	v.scale(1.5);
+	v.getModule().assertApprox(12*1.5);
+	v.scale(0.6666667);
+	v.getModule().assertEqual(12.0);
+	
+	
+	//v.assertEqual(v+v2-v2);
+	
+	v = v+v2;
+	v.dx().assertEqual(17);
+	v.dy().assertEqual(0);
+	v.getModule.assertEqual(17);
+	
+	v = v-v2;
+	v.dx().assertEqual(12);
+	v.dy().assertEqual(0);
+	v.getModule().assertEqual(12);	
+}
 
 unittest {
 	import std.stdio;
