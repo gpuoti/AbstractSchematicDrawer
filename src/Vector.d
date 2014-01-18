@@ -100,42 +100,12 @@ int main(string[] args){
 	
 }
 
-//version(unittest):
-//	void vectoreTest(Vector v, double deltax, double deltay, double mod){
-//		import dunit.toolkit;
-//	import Point;
-//	Vector v = new Vector(new Point(0,0), new Point (12, 0));
-//	Vector v2 = new Vector(new Point(0,0), new Point(5,0));
-//	
-//	v.dx().assertEqual(deltax);
-//	v.dy().assertEqual(deltay);
-//	v.getModule().assertEqual(mod);
-//	
-//	v.scale(1.5);
-//	v.getModule().assertApprox(mod*1.5);
-//	v.scale(0.6666667);
-//	v.getModule().assertEqual(mod);
-//	
-//	
-//	//v.assertEqual(v+v2-v2);
-//	
-//	v = v+v2;
-//	v.dx().assertEqual(5+deltax);
-//	v.dy().assertEqual(deltay);
-//	v.getModule.assertEqual(mo);
-//	
-//	v = v-v2;
-//	v.dx().assertEqual(12);
-//	v.dy().assertEqual(0);
-//	v.getModule().assertEqual(12);	
-//
-//	}  
 
 unittest{
+	/** Check module and scale calculation on vector (0,0)-->(12,0)*/
 	import dunit.toolkit;
 	import Point;
 	Vector v = new Vector(new Point(0,0), new Point (12, 0));
-	Vector v2 = new Vector(new Point(0,0), new Point(5,0));
 	
 	v.dx().assertEqual(12);
 	v.dy().assertEqual(0);
@@ -144,98 +114,68 @@ unittest{
 	v.scale(1.5);
 	v.getModule().assertApprox(12*1.5);
 	v.scale(0.6666667);
-	v.getModule().assertEqual(12.0);
+	v.getModule().assertApprox(12.0, 0.0001);
+}
+
+unittest{
 	
+	/** Check module and scale calculation on vector (10,5)-->(0,0) */
+	import dunit.toolkit;
+	import Point;
+	Vector v = new Vector(new Point(10,5), new Point (0, 0));
+
+	v.dx().assertApprox(-10.0);
+	v.dy().assertApprox(-5.0);
+	v.getModule().assertApprox(11.1803, 0.0001);
 	
-	//v.assertEqual(v+v2-v2);
+	v.scale(1.5);
+	v.getModule().assertApprox(11.1803*1.5, 0.0001);
+	v.scale(0.6666667);
+	v.getModule().assertApprox(11.1803, 0.0001);
+}
+
+unittest{
 	
-	v = v+v2;
-	v.dx().assertEqual(17);
-	v.dy().assertEqual(0);
-	v.getModule.assertEqual(17);
+	/** Check module and scale calculation on vector (5,1)-->(9,-1) */
+	import dunit.toolkit;
+	import Point;
+	Vector v = new Vector(new Point(5,1), new Point (9, -1));
+
+	v.dx().assertEqual(4.0);
+	v.dy().assertEqual(-2.0);
+	v.getModule().assertApprox(4.47214, 0.0001);
+	
+	v.scale(1.5);
+	v.getModule().assertApprox(4.47214*1.5, 0.0001);
+	v.scale(0.6666667);
+	v.getModule().assertApprox(4.47214, 0.0001);
+}
+
+
+unittest{
+	
+	/** Check sum and difference operator, taken:
+		v0 = (5,1)-->(9,-1)
+		v2 = (0,0)-->(5,0)
+		
+	check that v = v0+v2 == (5,1)-->(14-1)
+	and than that v-v2 == v0 	*/
+	import dunit.toolkit;
+	import Point;
+	Vector v0 = new Vector(new Point(5,1), new Point (9, -1));
+	Vector v = new Vector(new Point(5,1), new Point (9, -1));
+	Vector v2 = new Vector(new Point(0,0), new Point (5, 0));
+	Vector sum = new Vector(new Point(5,1), new Point (14,-1));
+	
+			
+	v = v0+v2;
+	v.dx().assertApprox(sum.dx(), 0.0001);
+	v.dy().assertApprox(sum.dy(), 0.0001);
+	v.getModule.assertApprox(sum.getModule(), 0.0001);
 	
 	v = v-v2;
-	v.dx().assertEqual(12);
-	v.dy().assertEqual(0);
-	v.getModule().assertEqual(12);	
+	v.dx().assertApprox(v0.dx(), 0.0001);
+	v.dy().assertApprox(v0.dy(), 0.0001);
+	v.getModule().assertApprox(v0.getModule(), 0.0001);	
 }
 
-unittest {
-	import std.stdio;
-	import Point;
-	import Vector;
-	
-	writeln("\nVector unittest");
-	writeln("--------------\n");
-
-	Vector v2 = new Vector(new Point(0,0), new Point(5,0));
-	Vector v[] = [	new Vector(new Point(0,0), new Point (12, 0)), 
-					new Vector(new Point(0,0), new Point (10, 5)),
-					new Vector(new Point(10,5), new Point (0, 0)),
-					new Vector(new Point(5,1), new Point (9, -1)) ];
-	
-	double modules[] = [12, 11.1803, 11.1803, 4.47214];
-	double dxs[] = [12, 10, -10, 4];
-	double dys[] = [0, 5, -5, -2];
-	
-	foreach (int i, Vector x; v ){
-		writeln("Testing vector", x);
-		writeln("--------------\n");
-		
-		write("Testing dx() and dy()...");
-		assert(abs(x.dx() - dxs[i]) < 0.0001);
-		assert(abs(x.dy() - dys[i]) < 0.0001);
-		writeln("Ok");
-		
-		write("module...");
-		assert(abs(x.getModule() - modules[i]) < 0.0001, "calculated module " ~ to!string( x.getModule()) ~ " expected " ~ to!string(modules[i]));
-		writeln("Ok");
-		
-		write("scale X1.5...");
-		x.scale(1.5);
-		writeln("resulting vector", x);
-		write("Testing dx() and dy()...");
-		assert(abs(x.dx() - dxs[i]*1.5) < 0.0001, "dx() result is " ~ to!string(x.dx()) ~ " expected " ~ to!string(dxs[i]*1.5));
-		assert(abs(x.dy() - dys[i]*1.5) < 0.0001, "dy() result is " ~ to!string(x.dy()) );
-		writeln("Ok");
-		
-		write("module...");
-		assert(abs(x.getModule() - modules[i]*1.5) < 0.0002, "getModule() result is " ~ to!string(x.getModule()));
-		writeln("Ok");
-		
-		x.scale(0.66667);
-		write("Testing dx() and dy()...");
-		assert(abs(x.dx() - dxs[i]) < 0.0001, "dx() result is " ~ to!string(x.dx()));
-		assert(abs(x.dy() - dys[i]) < 0.0001, "dy() result is " ~ to!string(x.dy()));
-		writeln("Ok");
-		
-		write("module...");
-		assert(abs(x.getModule() - modules[i]) < 0.0001);
-		writeln("Ok");
-		
-		
-		write("summing with ", v2, " result is... ");
-		x = x+v2;
-		writeln(x);
-		
-		write("subtracting with ", v2, " result is... ");
-		x = x-v2;
-		writeln(x);
-		
-		Point p = x.getArrow();
-		p.move(x);
-		writeln("moving vector arrow by itself... ", x);
-		
-		p = x.getOrigin();
-		p.move(x);
-		writeln("moving vector origin by itself... ", x);
-		
-		writeln();
-	}
-
-	
-	
-	
-	
-	
-}

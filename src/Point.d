@@ -81,8 +81,8 @@ unittest{
 	p2.getX().assertEqual(-3);
 	p2.getY().assertEqual(2);
 	 
-	p.distance(p2).assertEqual(3.6055);
-	p2.distance(p).assertEqual(3.6055);
+	p.distance(p2).assertApprox(3.6055, 0.0001);
+	p2.distance(p).assertApprox(3.6055, 0.0001);
 	
 	Vector v = new Vector(new Point(0,0), new Point(2,1)); 
 	p.move(v);
@@ -90,5 +90,24 @@ unittest{
 	
 	assertTrue(p2 == new Point (-3,2));
 	
+}
+
+unittest{
+	/** checks that two different point objects are equals if they rappresents the same geometrical point */
+	import dunit.toolkit;
+	Point p1 = new Point(2,3);
+	Point p2 = new Point(2,3);
+	
+	assertEqual(p1,p2);
+}
+
+unittest{
+	/** checks that two different point objects are different if they rappresents the same geometrical point */
+	import dunit.toolkit;
+	Point p1 = new Point(2,3);
+	Point p2 = new Point(2,3.1);
+	
+	assertFalse(p1 == p2);
+	assertTrue(p1 != p2);
 }
 
