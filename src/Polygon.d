@@ -19,7 +19,14 @@ class Polygon : Polyline {
 		add(closerSegment);		
 	}
 	
+	void close(){
+		add(new Segment(pointAtLen(0), pointAtLen(1.0)) );
+	}
 	
+	bool contains(Point p){
+		throw new Exception ("Not implemented yet");
+		return false;
+	}
 }
 
 
