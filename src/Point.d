@@ -13,6 +13,8 @@ class Point : Movable{
 private:
 	double x;
 	double y;
+	
+	immutable static double eps = 0.0001;
 
 public:
 	
@@ -38,6 +40,20 @@ public:
 		return y;
 	}
 	
+	Point minX(Point other){
+		if(getX() > other.getX()){
+			return other;
+		}
+		return this;
+	}
+	
+	Point minY(Point other){
+		if(getY() > other.getY()){
+			return other;
+		}
+		return this;
+	}
+	
 	/** Calculate the distance between the point to the other given as parameter */
 	double distance(Point other){
 		double d = pow( (x-other.x), 2) + pow( (y-other.y), 2);
@@ -56,7 +72,7 @@ public:
 	
 	override bool opEquals(Object other){
 		Point p2 = cast(Point)(other);
-		return p2 && x == p2.getX() && y == p2.getY();		
+		return p2 && p2.distance(this)<eps ;		
 	}
 	
 	/** Get a string rappresentation of the vector. */
@@ -68,6 +84,8 @@ public:
 	
 
 }
+
+
 
 
 unittest{

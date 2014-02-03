@@ -5,7 +5,7 @@ import std.conv;
 
 
 
-class Vector : Scalable{
+class Vector : Scalable, Movable{
 	private:
 		Point o;
 		Point arrow;
@@ -45,7 +45,16 @@ class Vector : Scalable{
 		
 		Vector getVersor(){
 			double mod = getModule();
-			return new Vector(o, new Point(arrow.getX()/mod, arrow.getY()/mod)); 
+			Point versorArrow = new Point(dx()/mod, dy()/mod);
+			versorArrow.move(new Vector(new Point(0,0), o));
+			return new Vector(o, versorArrow); 
+		}
+		
+		bool equalDirection(Vector other){
+			auto otherDir = other.dy() / other.dx();
+			auto dir = dy() / dx();
+			
+			return otherDir == dir;
 		}
 		
 		void scale(double factor){
@@ -57,6 +66,11 @@ class Vector : Scalable{
 			o = new Point( o.getX() * factor, o.getY()*factor);
 			
 			
+		}
+		
+		void move(Vector v){
+			o.move(v);
+			arrow.move(v);
 		}
 		
 		Vector opNeg() {
@@ -83,7 +97,7 @@ class Vector : Scalable{
 		
 		override bool opEquals(Object other){
 			Vector v2 = cast(Vector)(other);
-			return v2 && o == v2.getArrow() && arrow == v2.getArrow();
+			return v2 && o == v2.getOrigin() && arrow == v2.getArrow();
 		}
 		
 		

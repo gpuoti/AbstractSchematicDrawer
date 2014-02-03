@@ -1,9 +1,18 @@
 import Measurable1D;
 import Vector;
+import Shape : Shape;
 
 import std.stdio;
+import std.math;
 
-class Segment : Vector, Measurable1D{
+
+version (unittest){
+	import dunit.toolkit;
+	import Point;
+}
+
+
+class Segment : Vector, Measurable1D {
 	
 	public:
 	
@@ -17,6 +26,19 @@ class Segment : Vector, Measurable1D{
 			return getModule();
 		}
 		
+		
+		bool containsPoint(Point p){
+			
+			/* special cases for segment bounds */
+			if(p == getOrigin() || p == getArrow()){
+				return true;
+			}
+			
+			auto v2p = new Vector(getOrigin(), p);			
+			return v2p.equalDirection(this) && v2p.getModule <= getModule(); 
+
+		}
+		
 		/** As Measurable1D you can get the point on the segment given a percentual of it's lenght */
 		Point pointAtLen(double l){
 			Point p = new Point(getOrigin());
@@ -26,13 +48,23 @@ class Segment : Vector, Measurable1D{
 			
 			return p;		
 		}
+		
+		bool isConsecutive(Segment s){
+			
+			return s.pointAtLen(1.0) == getOrigin(); 
+			
+		}
+		
+		bool isCompatible(Segment s){
+			return getArrow() == s.pointAtLen(0.0);
+		}
+		
+		
+		
 } 
 
 
 unittest {
-	import dunit.toolkit;
-	import Point;
-	
 	/** Checks that the midpoint of segment (0,0)--(12,0) is (6,0) */
 	Segment s = new Segment(new Point(0,0), new Point(12,0));
 	Point m = s.pointAtLen(0.5);
@@ -43,9 +75,6 @@ unittest {
 }
 
 unittest {
-	import dunit.toolkit;
-	import Point;
-	
 	/** Checks that the first third point of segment (-3,2)--(3,-1) is (-1,1) */
 	Segment s = new Segment(new Point(-3,2), new Point(3,-1));
 	Point m = s.pointAtLen(0.33333);
@@ -53,5 +82,15 @@ unittest {
 	
 	m.getX().assertApprox(-1, 0.0001);
 	m.getY().assertApprox(1, 0.0001);
+	
+}
+
+unittest {
+	/** Checks that the first third point of segment (-3,2)--(3,-1) is (-1,1) */
+	Segment s = new Segment(new Point(-3,2), new Point(3,-1));
+	
+	assertTrue(s.containsPoint(new Point(-3,2)) );
+	assertTrue(s.containsPoint(new Point(3,-1)) );
+	assertTrue(s.containsPoint(new Point(0, 0.5)) );
 	
 }
