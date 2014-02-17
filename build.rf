@@ -11,6 +11,7 @@
 "src/DUnit/source/dunit/result/moduleresultcollection.d"
 "src/DUnit/source/dunit/toolkit.d"
 "src/DUnit/source/example.d"
+"src/Line.d"
 "src/MathConsts.d"
 "src/Measurable1D.d"
 "src/Movable.d"

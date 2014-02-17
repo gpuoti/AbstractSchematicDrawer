@@ -7,16 +7,18 @@ import std.container;
 import std.conv;
 import std.exception;
 
+import std.traits;
+
 version(unittest){
 	import dunit.toolkit;
 }
 
-class Shape(ShapeT) :  Scalable, Movable{
+class Shape(ShapeT) :  Scalable, Movable
+if (__traits(hasMember, ShapeT, "vertices") ) {
 	
 	protected:
 		ShapeT shapes[];
 		
-		abstract bool hasPoint(Point p);
 	public:
 
 		this(){
@@ -28,6 +30,15 @@ class Shape(ShapeT) :  Scalable, Movable{
 		
 		long countComponents(){
 			return shapes.length;
+		}
+		
+		Point[] vertices(){
+			Point[] v;
+			
+			foreach(ShapeT s; shapes){
+				v ~= s.vertices();
+			}
+			return v;
 		}
 		
 		void move(Vector v){
@@ -42,11 +53,20 @@ class Shape(ShapeT) :  Scalable, Movable{
 			}
 		}
 		
-		final bool containsPoint(Point p){
+		abstract bool contains(Point p);
+		
+		bool containsPoint(Point p){
 			auto i= 0;
 			for(i=0; i<shapes.length && !shapes[i].containsPoint(p); ++i ){}
-			
 			return i<shapes.length;
+		}
+		
+		final bool containsShape(AnyShapeT : Shape)(AnyShapeT s){
+			int i = 0;
+			auto vertices = s.vertices(); 
+			for(i=0; i<vertices.length && contains(vertices[i]); ++i ) {}
+			
+			return i==vertices.length;
 		}
 		
 		

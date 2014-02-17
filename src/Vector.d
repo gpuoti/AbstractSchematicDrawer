@@ -1,8 +1,13 @@
 import Point;
+import Line;
 import Scalable;
 import std.math;
 import std.conv;
 
+version(unittest){
+	import dunit.toolkit;
+	import Point;
+}
 
 
 class Vector : Scalable, Movable{
@@ -12,6 +17,7 @@ class Vector : Scalable, Movable{
 		
 	
 	public:
+		/** Construct a vector given its base point and its arrow position */
 		this(Point origin, Point arrowPoint){
 			o = origin;
 			arrow = arrowPoint;
@@ -22,27 +28,37 @@ class Vector : Scalable, Movable{
 			arrow = other.arrow;
 		}
 		
+		/** Retrieve the base point of the vector */
 		Point getOrigin(){
 			return o;
 		}
 			
+		/** Retrieve the arrow position of the vector */	
 		Point getArrow(){
 			return arrow;
 		}
 		
+		/** Read the projection along X axis */ 
 		double dx(){
 			return arrow.getX() - o.getX();
 		}
 		
+		/** Read the projection along Y axis */
 		double dy(){
 			return arrow.getY() - o.getY();
 		}
 		
+		/** Get the actual line direction of the vector */
+		Line getLine(){
+			return new Line(o, arrow);
+		}
 		
+		/** Calculate the module of the vector */
 		double getModule(){
 			return o.distance(arrow);
 		}
 		
+		/** Get a vector rappresenting the actual versor of the vector */
 		Vector getVersor(){
 			double mod = getModule();
 			Point versorArrow = new Point(dx()/mod, dy()/mod);
@@ -50,13 +66,17 @@ class Vector : Scalable, Movable{
 			return new Vector(o, versorArrow); 
 		}
 		
-		bool equalDirection(Vector other){
-			auto otherDir = other.dy() / other.dx();
-			auto dir = dy() / dx();
-			
-			return otherDir == dir;
+		/** Get the slope of the line direction of this vector */
+		double direction(){
+			return dy() / dx();
 		}
 		
+		/** Checks if two vector has equal slope, that is if they are parallel */
+		bool equalDirection(Vector other){
+			return other.direction() == direction();
+		}
+		
+		/** implements the Scale interface. Scale the vector by the given factor */
 		void scale(double factor){
 			double x = arrow.getX() * factor;
 			double y = arrow.getY() * factor;
@@ -64,21 +84,20 @@ class Vector : Scalable, Movable{
 			arrow = new Point(x, y);
 			
 			o = new Point( o.getX() * factor, o.getY()*factor);
-			
-			
 		}
 		
+		/** Move the vector arround by appling a 2D translation to both base and arrow position. This implement the Movable interface. */
 		void move(Vector v){
 			o.move(v);
 			arrow.move(v);
 		}
 		
+		/** Make a vector opposite to this */
 		Vector opNeg() {
 			return new Vector(arrow, o);
-			
 		}
 		
-		
+		/** Make a vector by summing this vector with the other given as parameter */
 		Vector opAdd(Vector other) {
 			Point newArrow = new Point(arrow);
 		
@@ -87,6 +106,7 @@ class Vector : Scalable, Movable{
 		
 		}
 		
+		/** Make a vector by subtracting this vector with the other given as parameter */
 		Vector opSub(Vector other) {
 			Point newArrow = new Point(arrow);
 		
@@ -95,12 +115,14 @@ class Vector : Scalable, Movable{
 		
 		}
 		
+		/** Checks if two vector are equal by appling the natural equality relation:
+			two vector are equal if have the same base and arrow point */
 		override bool opEquals(Object other){
 			Vector v2 = cast(Vector)(other);
 			return v2 && o == v2.getOrigin() && arrow == v2.getArrow();
 		}
 		
-		
+		/** Make a readable reppresentation of the vector */ 
 		override string toString(){
 			string s;
 			s = std.string.format("%s ---> %s", o.toString(), arrow.toString() );
@@ -117,8 +139,6 @@ int main(string[] args){
 
 unittest{
 	/** Check module and scale calculation on vector (0,0)-->(12,0)*/
-	import dunit.toolkit;
-	import Point;
 	Vector v = new Vector(new Point(0,0), new Point (12, 0));
 	
 	v.dx().assertEqual(12);
@@ -134,8 +154,6 @@ unittest{
 unittest{
 	
 	/** Check module and scale calculation on vector (10,5)-->(0,0) */
-	import dunit.toolkit;
-	import Point;
 	Vector v = new Vector(new Point(10,5), new Point (0, 0));
 
 	v.dx().assertApprox(-10.0);
@@ -151,8 +169,6 @@ unittest{
 unittest{
 	
 	/** Check module and scale calculation on vector (5,1)-->(9,-1) */
-	import dunit.toolkit;
-	import Point;
 	Vector v = new Vector(new Point(5,1), new Point (9, -1));
 
 	v.dx().assertEqual(4.0);
@@ -174,8 +190,7 @@ unittest{
 		
 	check that v = v0+v2 == (5,1)-->(14-1)
 	and than that v-v2 == v0 	*/
-	import dunit.toolkit;
-	import Point;
+	
 	Vector v0 = new Vector(new Point(5,1), new Point (9, -1));
 	Vector v = new Vector(new Point(5,1), new Point (9, -1));
 	Vector v2 = new Vector(new Point(0,0), new Point (5, 0));
@@ -191,5 +206,16 @@ unittest{
 	v.dx().assertApprox(v0.dx(), 0.0001);
 	v.dy().assertApprox(v0.dy(), 0.0001);
 	v.getModule().assertApprox(v0.getModule(), 0.0001);	
+}
+
+unittest{
+	import std.stdio;
+	
+	Point p1 = new Point(4, 3);
+	Point p2 = new Point(4,-1);
+	
+	Vector v = new Vector(new Point(4,3), new Point(4,-1));
+	Line l = v.getLine();
+	writeln("Line " ~ to!string(l));
 }
 
