@@ -12,7 +12,7 @@ version (unittest){
 }
 
 
-class Segment : Vector, Measurable1D {
+class Segment : Vector, Measurable1D, Shape {
 	
 	public:
 	
@@ -36,6 +36,10 @@ class Segment : Vector, Measurable1D {
 			auto v2p = new Vector(getOrigin(), p);			
 			return v2p.equalDirection(this) && v2p.getModule <= getModule(); 
 
+		}
+		
+		bool contains (Point p){
+			return contains(p);
 		}
 		
 		/** As Measurable1D you can get the point on the segment given a percentual of it's lenght */

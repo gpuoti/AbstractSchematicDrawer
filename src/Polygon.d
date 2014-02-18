@@ -8,8 +8,13 @@ version(unittest){
 	import dunit.toolkit;
 }
 
-
+/** For the purposes of this library a Polygon is a closed Polyline so it is basically constructed from a polilyne
+	adding a last segment from the last to the first edge. */
+ 
 class Polygon : Polyline {
+	
+	/** Construct the Polygon by cloning the given polyline and adding to it a last segment 
+		from the last to the first edge of the polyline */ 
 	this(Polyline p){
 		super(p); 
 		close();	
@@ -19,11 +24,11 @@ class Polygon : Polyline {
 		super(p);
 	}
 	
-	
-	void close(){
+	private void close(){
 		add(new Segment(pointAtLen(len()), pointAtLen(0.0)) );
-	}
+	} 
 	
+	/** Check if a given point is inside the polygon's area*/
 	override bool contains(Point p){
 		Point[] intersectionPoints = intersect(new Line(0, p.getY()));
 	
@@ -61,6 +66,6 @@ unittest{
 	polygon.contains(w1).assertTrue();
 	polygon.contains(w2).assertTrue();
 	polygon.contains(w3).assertTrue();
-	polygon.containsShape(poly2).assertTrue;
-	polygon.containsShape(poly2).assertTrue();
+	polygon.containsShape!Polyline(poly2).assertTrue();
+	polygon.containsShape!Polyline(poly2).assertTrue();
 }

@@ -13,7 +13,23 @@ version(unittest){
 	import dunit.toolkit;
 }
 
-class Shape(ShapeT) :  Scalable, Movable
+interface Shape {
+		
+		Point[] vertices();
+		bool contains(Point p);
+		bool containsPoint(Point p);
+		
+		final bool containsShape(AnyShapeT : Shape)(AnyShapeT s){
+			int i = 0;
+			auto vertices = s.vertices(); 
+			for(i=0; i<vertices.length && contains(vertices[i]); ++i ) {}
+			
+			return i==vertices.length;
+		}
+}
+
+
+class ShapeComposite(ShapeT : Shape) :  Scalable, Movable, Shape
 if (__traits(hasMember, ShapeT, "vertices") ) {
 	
 	protected:
@@ -53,9 +69,11 @@ if (__traits(hasMember, ShapeT, "vertices") ) {
 			}
 		}
 		
-		abstract bool contains(Point p);
+		bool contains(Point p){
+			return containsPoint(p);
+		}
 		
-		bool containsPoint(Point p){
+		final bool containsPoint(Point p){
 			auto i= 0;
 			for(i=0; i<shapes.length && !shapes[i].containsPoint(p); ++i ){}
 			return i<shapes.length;
@@ -67,9 +85,7 @@ if (__traits(hasMember, ShapeT, "vertices") ) {
 			for(i=0; i<vertices.length && contains(vertices[i]); ++i ) {}
 			
 			return i==vertices.length;
-		}
-		
-		
+		}	
 		
 }
 

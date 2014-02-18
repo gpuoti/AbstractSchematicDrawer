@@ -20,12 +20,15 @@ class Line {
 	
 	public:
 		
-	
+		/** Construct a line given its slope and the projection of its intersection point with the y axis. 
+		@param mx the line slope
+		@param c0 the projection of the intersection point of the line with the y axis  */
 		this(double mx, double c0){
 			m = mx;
 			c = c0;
 		}
 		
+		/** Construct a line passing by the two given points */
 		this(Point p1, Point p2){
 			m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
 			if(isInfinity(m)){
@@ -39,6 +42,8 @@ class Line {
 			}
 		}
 		
+		/** Check this and another line for equality.
+		Two lines are considered equals if they coincide. */
 		override bool opEquals( Object other) {
 			Line l = cast(Line)(other);
 			if(isInfinity(m) && isInfinity(l.m) ){
@@ -48,10 +53,12 @@ class Line {
 			return m == l.m && c == l.c;
 		} 
 		
+		/** Retrieve the line slope */
 		double direction(){
 			return m;
 		}
 		
+		/** Intersect this line with the given other */
 		Point intersect(Line l){
 			double x;
 			double y;
@@ -78,7 +85,7 @@ class Line {
 			return new Point(x,y);
 		}
 		
-		/** Get a string rappresentation of the vector. */
+		/** Get a string rappresentation of the line. */
 		override string toString(){
 			string s;
 			s = std.string.format( "y = (%.1fx + %.1f)", m, c );

@@ -3,7 +3,7 @@ import std.conv;
 import std.algorithm;
 import std.stdio;
 import Measurable1D;
-import Shape : Shape;
+import Shape ;
 import Segment;
 import Line;
 
@@ -15,8 +15,8 @@ version (unittest){
 
 /** A Polyline is a sequence of contigous segments.
 It is modelled as a Shape composed of segments and it is measurable with a norm defined as the sum of the norm of composing segments. */
-class Polyline : Shape!Segment, Measurable1D {
-	alias Shape!Segment.shapes segments;
+class Polyline : ShapeComposite!Segment, Measurable1D {
+	alias ShapeComposite!Segment.shapes segments;
 	
 	public:
 	
@@ -64,28 +64,6 @@ class Polyline : Shape!Segment, Measurable1D {
 			super.add(s);
 		}
 		
-		
-		/** As they are Measurable1D, you can get the length of the segment calling len() method.
-		This is a convenient name for getModule() method */
-		double len(){
-			return getModule();
-		}
-		
-		Segment segmentAtLen(double l)
-		in {
-			assert(l >= 0);
-			assert(l<= len());
-		}
-		body{
-			int i=0;			
-			while (l > 0){
-				l -= segments[i].len();				
-				i++;
-			}
-			i = max(0,i-1);
-			return segments[i];
-		}
-		
 		/** Get the module of this polyline as the sum of the module of component segment */
 		double getModule(){
 			double len = 0.0;
@@ -93,6 +71,12 @@ class Polyline : Shape!Segment, Measurable1D {
 				len += s.len();
 			}
 			return len;
+		}
+		
+		/** As they are Measurable1D, you can get the length of the segment calling len() method.
+		This is a convenient name for getModule() method */
+		double len(){
+			return getModule();
 		}
 		
 		/** Calculate the len of the polyline reduced to the given segment. 
@@ -113,7 +97,7 @@ class Polyline : Shape!Segment, Measurable1D {
 			return len;
 		}
 		
-		
+		/** Get the point at given len from the start edge of the polyline */
 		Point pointAtLen(double l)
 		in {
 			assert( l>=0.0);
@@ -125,7 +109,23 @@ class Polyline : Shape!Segment, Measurable1D {
 			return s.pointAtLen( s.len()-(len2Seg-l) );
 		}
 		
-		/** Intersect the polyline with the given line returing an array of intersection points. */
+		/** Get the segment whose the point at given len from the start edge of the polyline belong to*/
+		Segment segmentAtLen(double l)
+		in {
+			assert(l >= 0);
+			assert(l<= len());
+		}
+		body{
+			int i=0;			
+			while (l > 0){
+				l -= segments[i].len();				
+				i++;
+			}
+			i = max(0,i-1);
+			return segments[i];
+		}
+		
+		/** Intersect the polyline with the given line returning an array of intersection points. */
 		Point[] intersect(Line l){
 			Point[] points;
 			foreach(Segment s; segments){
@@ -137,12 +137,6 @@ class Polyline : Shape!Segment, Measurable1D {
 			}
 			
 			return points;
-		}
-		
-		/** Checks if the polyline contain a given point in its area.
-		Given that a polyline never have a finite area, a given point can be contained into the polyline only if it belong to it. */
-		override bool contains(Point p){ 
-			return false; 
 		}
 		
 }
