@@ -15,85 +15,126 @@ class ParallelLineException : Exception{
 		}
 
 class Line {
-	private double m;
+	private double a;
+	private double b;
 	private double c;
 	
 	public:
 		
 		/** Construct a line given its slope and the projection of its intersection point with the y axis. 
-		@param mx the line slope
-		@param c0 the projection of the intersection point of the line with the y axis  */
-		this(double mx, double c0){
-			m = mx;
-			c = c0;
+		@param m the line slope
+		@param b the projection of the intersection point of the line with the y axis  */
+		this(double m, double q){
+			 a = m;
+			 b = -1;
+			 c = q;
 		}
 		
 		/** Construct a line passing by the two given points */
 		this(Point p1, Point p2){
-			m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
-			if(isInfinity(m)){
-				c = p1.getX();
+			auto horizontal = p1.getY() == p2.getY();
+			auto vertical 	= p1.getX() == p2.getX();
+			
+			if(horizontal){
+				a = 0;
+				b = -1;
+				c = p1.getY();
+			}
+			else if(vertical){
+				a = 1;
+				b = 0;
+				c = -p1.getX();
 			}
 			else{
-				c = p1.getY()/(m * p1.getX());
-				if(isNaN(c)|| isInfinity(c)){
-					c = p1.getY();
-				}
+				a = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+				b = -1;
+				c = (-a * p1.getX()) + p1.getY();
 			}
+			
+			
+		}
+		
+	
+		
+		/** Check if this Line is parallel to the given one 
+		@param const Line other the Line to check parallelism against */
+		bool parallelTo(const Line other) const {
+			return direction() == other.direction();
 		}
 		
 		/** Check this and another line for equality.
 		Two lines are considered equals if they coincide. */
-		override bool opEquals( Object other) {
-			Line l = cast(Line)(other);
-			if(isInfinity(m) && isInfinity(l.m) ){
-				return c == l.c;
-			}
-				
-			return m == l.m && c == l.c;
+		override bool opEquals( Object other) const  {
+			auto equals = false;
+			const Line l = to!Line(other);
+			equals = parallelTo(l);
+			// the equation should be the same result for any point (x,y) and in partucular for (1,1)
+			equals &= (a +b + c == l.a + l.b + l.c);
+			
+			return equals;
 		} 
 		
 		/** Retrieve the line slope */
-		double direction(){
-			return m;
+		double direction() const {
+			return -a/b;
 		}
 		
 		/** Intersect this line with the given other */
 		Point intersect(Line l){
 			double x;
 			double y;
-			
-			if(m == l.m){
-				throw new ParallelLineException();
+			if(l.a != 0){	
+				y = ((a*l.c/l.a) - c) / (-((a/l.a)*l.b) +b);
+				x = -((l.b * y) +l.c) / l.a;
 			}
-			
-			if(isInfinity(m)){
-				x = (c - l.c) / l.m;
-				y = c;	
-				if(isInfinity(x)){
-					x = c;
-					y = l.c;
-				}
-			}			
-			else if(isInfinity(l.m)){
-				return l.intersect(this);	
-			}
+			else if(a != 0){ 
+				return l.intersect(this);
+			}	  
 			else{
-				x = (l.c-c) / (m-l.m);
-				y = m*x + c;
-			} 
+				throw new ParallelLineException;
+			}
 			return new Point(x,y);
 		}
 		
 		/** Get a string rappresentation of the line. */
-		override string toString(){
+		override string toString() const{
 			string s;
-			s = std.string.format( "y = (%.1fx + %.1f)", m, c );
+			
+			s = to!string(a) ~ "x ";
+			if(b>=0){
+				s ~= "+";
+			}
+			s ~=  to!string(b) ~ "y ";
+			if(c>=0){
+				s ~= "+";
+			}
+			s ~= to!string(c) ~ " = 0"; 
+			   
 			return s;
 		}
 		
 }
 
+unittest{
+	Line l1 = new Line(new Point(3,3), new Point(4,-1));
+	Line l2 = new Line(new Point(4,-1), new Point(3,3));
+	
+	assertEqual(l1, l2);	
+}
+
+unittest{
+	Line l1 = new Line(new Point(4,3), new Point(4,-1));
+	Line l2 = new Line(new Point(4,-1), new Point(4,3));
+	
+	assertEqual(l1, l2);	
+}
+
+unittest{
+	Line l1 = new Line(new Point(4,3), new Point(4,-1));
+	Line l2 = new Line(new Point(6,-1), new Point(6,3));
+	
+	assertFalse(l1 == l2);	
+}
 
 unittest{
 	Line l1 = new Line(2, 0);
@@ -107,8 +148,8 @@ unittest{
 	Line l1 = new Line(new Point(1,1), new Point(1,-1));
 	Line l2 = new Line(new Point(0,0), new Point(1,1));
 	
-	assertEqual(l1.intersect(l2), new Point(1,1));
-	assertEqual(l2.intersect(l1), new Point(1,1));
+	assertEqual(l1.intersect(l2), new Point(1,1)); 
+	assertEqual(l2.intersect(l1), new Point(1,1), "intersecting\n" ~ to!string(l2) ~ "\n"~to!string(l1));
 }
 
 unittest{
@@ -124,15 +165,10 @@ unittest{
 	Line l2 = new Line(new Point(0,0), new Point(0,1));
 	
 	assertEqual(l1.intersect(l2), new Point(0,1));
-	assertEqual(l2.intersect(l1), new Point(0,1));
+	assertEqual(l2.intersect(l1), new Point(0,1), "intersecting\n" ~ to!string(l1) ~ "\n"~to!string(l2));
 }
 
-unittest{
-	Line l1 = new Line(new Point(4,3), new Point(4,-1));
-	Line l2 = new Line(new Point(4,-1), new Point(4,3));
-	
-	assertEqual(l1, l2);	
-}
+
 
 unittest{
 	Point p1 = new Point(3,4);

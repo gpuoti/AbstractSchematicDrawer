@@ -232,6 +232,5 @@ unittest{
 	
 	Vector v = new Vector(new Point(4,3), new Point(4,-1));
 	Line l = v.getLine();
-	writeln("Line " ~ to!string(l));
 }
 
