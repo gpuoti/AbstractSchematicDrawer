@@ -115,6 +115,13 @@ class Vector : Scalable, Movable{
 		
 		}
 		
+		/** Execute the multiplication by a scalar. The result vector is a copy of the vector scale by the given scalar factor */
+		Vector opMul(double scalar){
+			Vector v = new Vector(this);
+			v.scale(scalar);
+			return v;
+		}
+		
 		/** Checks if two vector are equal by appling the natural equality relation:
 			two vector are equal if have the same base and arrow point */
 		override bool opEquals(Object other){
@@ -149,6 +156,15 @@ unittest{
 	v.getModule().assertApprox(12*1.5);
 	v.scale(0.6666667);
 	v.getModule().assertApprox(12.0, 0.0001);
+}
+
+unittest{
+	Vector v = new Vector(new Point(0,0), new Point (12, 0));
+	Vector v2 =v * 1.5;
+	
+	v.scale(1.5);
+	v.assertEqual(v2);
+	
 }
 
 unittest{
