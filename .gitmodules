@@ -1,3 +1,0 @@
-[submodule "src/DUnit"]
-	path = src/DUnit
-	url = https://github.com/nomad-software/dunit.git

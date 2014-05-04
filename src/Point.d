@@ -15,8 +15,12 @@ private:
 	double y;
 	
 	immutable static double eps = 0.0001;
+	
+	
 
 public:
+	const static Point ORIGIN = new Point(0,0);
+	
 	
 	/** construct a Point given its coordinates */ 
 	this(double coordX, double coordY){		
@@ -29,6 +33,11 @@ public:
 		x = other.x;
 		y = other.y;
 	}  
+	
+	this(){
+		this(0,0);
+	}
+	
 	
 	/** Allows to read point's X coordinate.  */
 	double getX(){
@@ -81,6 +90,8 @@ public:
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
 	}
+	
+	
 	
 
 }

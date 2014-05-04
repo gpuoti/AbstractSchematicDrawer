@@ -168,8 +168,6 @@ unittest{
 	assertEqual(l2.intersect(l1), new Point(0,1), "intersecting\n" ~ to!string(l1) ~ "\n"~to!string(l2));
 }
 
-
-
 unittest{
 	Point p1 = new Point(3,4);
 	Point p2 = new Point(-1,4);
@@ -177,6 +175,5 @@ unittest{
 	Line l2 = new Line(p2, p1);
 	
 	assertEqual(l1,l2);
-	
 	assertEqual(l1, l2);	
 }
