@@ -49,6 +49,7 @@ public:
 		return y;
 	}
 	
+	/** Return the leftmost point between this and the other one */
 	Point minX(Point other){
 		if(getX() > other.getX()){
 			return other;
@@ -56,6 +57,7 @@ public:
 		return this;
 	}
 	
+	/** Return the lower point between this and the other one */
 	Point minY(Point other){
 		if(getY() > other.getY()){
 			return other;
@@ -78,7 +80,7 @@ public:
 		y += v.dy(); 
 	}
 
-	
+	/** Two points are considered equal if their distance is less then epsilon */
 	override bool opEquals(Object other){
 		Point p2 = cast(Point)(other);
 		return p2 && p2.distance(this)<eps ;		

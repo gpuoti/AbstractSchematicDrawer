@@ -13,6 +13,17 @@ version(unittest){
 	import dunit.toolkit;
 }
 
+/** Shape objects are represents objects that can be checked for inclusion of other shapes. 
+
+	Inclusion relationship is implemented as a final method (containsShape) of the shape interface using the following definition:
+		A shape is included within another one if all its verteces are included within the other shape. 
+
+	To let the definition applicable:
+		any shape must define a set of vertices describing its boundary polygon. 
+		any shape must be checkable for point inclusion in its area.
+
+	In addition any shape must be checkable for point inclusion in its perimeter. */
+
 interface Shape {
 		
 		Point[] vertices();
@@ -27,6 +38,7 @@ interface Shape {
 			return i==vertices.length;
 		}
 }
+
 
 
 class ShapeComposite(ShapeT : Shape) :  Scalable, Movable, Shape
