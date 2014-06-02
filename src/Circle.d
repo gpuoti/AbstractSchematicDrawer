@@ -15,7 +15,7 @@ version (unittest){
 	import dunit.toolkit;
 }
 
-/** Object of this class reppresentes, quite obviously 2D circles */ 
+/** Object of this class representes, quite obviously 2D circles */ 
 class Circle : Shape, Movable, Scalable{
 	private Point c;
 	private double r;
@@ -74,7 +74,7 @@ class Circle : Shape, Movable, Scalable{
 		return p.distance(c) == r;
 	}
 	
-	/** Circle objects are Moveable so, move method can be called to move the circle arround with a translate transform. */
+	/** Circle objects are Movable so, move method can be called to move the circle around with a translate transform. */
 	void move(Vector v){
 		c.move(v);
 	}
