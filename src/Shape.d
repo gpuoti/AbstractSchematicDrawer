@@ -16,7 +16,7 @@ version(unittest){
 /** Shape objects are represents objects that can be checked for inclusion of other shapes. 
 
 	Inclusion relationship is implemented as a final method (containsShape) of the shape interface using the following definition:
-		A shape is included within another one if all its verteces are included within the other shape. 
+		A shape is included within another one if all its vertices are included within the other shape. 
 
 	To let the definition applicable:
 		any shape must define a set of vertices describing its boundary polygon. 
@@ -99,11 +99,28 @@ if (__traits(hasMember, ShapeT, "vertices") ) {
 			return i==vertices.length;
 		}	
 		
+		int opApply(int delegate(ref ShapeT) f){
+			foreach(ShapeT s; shapes){
+				f(s);
+			}
+			return 0;
+		}
+		
 }
 
 
 
 unittest{
+	import Segment;
 	
+	Segment s1 = new Segment(new Point(10, 0), new Point (200, 110));
+	Segment s2 = new Segment(new Point(10, 10), new Point (200, 120));
+	ShapeComposite!Segment s = new ShapeComposite!Segment();
+	s.add(s1);
+	s.add(s2);	
+	
+	foreach(Segment seg; s){
+		writeln(to!string(s));
+	}
 }
 
