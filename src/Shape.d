@@ -24,7 +24,7 @@ version(unittest){
 
 	In addition any shape must be checkable for point inclusion in its perimeter. */
 
-interface Shape {
+interface Shape: Movable, Scalable{
 		
 		Point[] vertices();
 		bool contains(Point p);

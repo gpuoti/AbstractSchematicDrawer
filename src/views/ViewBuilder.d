@@ -7,5 +7,7 @@ interface IViewBuilder (OutT) {
 	/** build is the method called to actually build the representation of an object of any type.
 		Specializations may be available for any object type used as parameter in a call. */
 	
-	OutT build(ObjectType) (ObjectType obj); 
+	OutT build(ObjectType ) (ObjectType obj); 
+	
+	
 }

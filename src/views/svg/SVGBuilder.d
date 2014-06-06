@@ -1,55 +1,100 @@
 import Segment;
 import Shape;
 import ViewBuilder;
+import SVGStroke;
 import std.xml;
 import std.stdio;
 import std.conv;
-import dunit.toolkit;
+import dunit.toolkit; 
 import std.string;
 
 
-class SVGBuilder : IViewBuilder!string{
-	private:
+
+class SVGBuilderComponent : IViewBuilder!(Element){
+	
+	static bool isManaged(Type)() {
+		return is(Type : Segment);
+	}
+	
+	SVGStroke stroke = new SVGStroke;
+	
+	/** by default, this builder does nothing.
+		That is it ignore call with unsupported object type (template specialization not available) */
+	Element build(ObjectType) (ObjectType obj) if (!isManaged!ObjectType()) {
+		writeln("in SVGBuilderComponent");
+		writeln(to!string(obj));
+		return new Element("desc", "undefined rendering" ); 
+	}
+
+	Element build(ObjectType) (ObjectType obj) if (is (ObjectType : Segment)) {
+	
+		Element segment = new Element("line");
+		
+		auto p = obj.getOrigin();
+		auto q = obj.getArrow();
+		
+		foreach (string k, string v ; stroke.attributes() ){
+			segment.tag.attr[k] = v;
+		}
+		
+		segment.tag.attr["x1"] = to!string(p.getX());
+		segment.tag.attr["y1"] = to!string(p.getY());
+		
+		segment.tag.attr["x2"] = to!string(q.getX());
+		segment.tag.attr["y2"] = to!string(q.getY());
+		
+		return segment; 
+	
+	}
+
+}
+  
+unittest {
+	Segment s = new Segment(new Point(10, 0), new Point (200, 110));
+	SVGBuilderComponent svgBuilder = new SVGBuilderComponent();
+	
+	string expectedString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
+<svg>
+    <line stroke-width=\"1\" stroke=\"#000\" y1=\"0\" x1=\"10\" y2=\"110\" x2=\"200\" />
+</svg>";
+	
+	Element elem = svgBuilder.build(s);
+	
+	elem.tag.attr.assertHasKey("stroke-width");
+	elem.tag.attr["stroke-width"].assertEqual("1");
+	elem.tag.attr.assertHasKey("stroke-color");
+	elem.tag.attr["stroke-color"].assertEqual("#000000");
+	elem.tag.attr.assertHasKey("x1");
+	elem.tag.attr["x1"].assertEqual("10");
+	elem.tag.attr.assertHasKey("y1");
+	elem.tag.attr["y1"].assertEqual("0");
+	elem.tag.attr.assertHasKey("x2");
+	elem.tag.attr["x2"].assertEqual("200");
+	elem.tag.attr.assertHasKey("y2");
+	elem.tag.attr["y2"].assertEqual("110");
+	
+}
+
+unittest {
+	Segment s1 = new Segment(new Point(10, 0), new Point (200, 110));
+	Segment s2 = new Segment(new Point(10, 10), new Point (200, 120));
+	ShapeComposite!Segment s = new ShapeComposite!Segment();
+	s.add(s1);
+	s.add(s2);
+	
+	SVGBuilderComponent svgBuilder = new SVGBuilderComponent();
+
+}
+
+
+
+class SVGBuilder : IViewBuilder!(string){
+	private {
 	
 	 	static immutable svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 	 	
-	
+	 	SVGBuilderComponent componentBuilder = new SVGBuilderComponent;
 	 	
- 		/** by default, this builder does nothing.
- 		That is it ignore call with unsupported object type (template specialization not available) */
- 		Element buildComponent(ObjectType) (ObjectType obj){
- 			string s = "unsupported element type\n";
- 			s ~= "object description\n";
- 			s ~= "\t" ~ to!string(obj);
- 			return new Element("desc", s);
- 		}
- 		
- 		Element buildComponent(ShapeT : Shape) (ShapeComposite!ShapeT shapeComposite){
- 			Element group = new Element(new Tag("g"));
- 			
- 			foreach(ShapeT s; shapeComposite){
- 				group ~= buildComponent(s);
- 			}
- 			
- 			return group;
- 		} 
- 		
- 		
- 		Element buildComponent(Segment s){
- 			Element segment = new Element("line");
- 			
- 			auto p = s.getOrigin();
- 			auto q = s.getArrow();
- 			
- 			segment.tag.attr["x1"] = to!string(p.getX());
- 			segment.tag.attr["y1"] = to!string(p.getY());
- 			
- 			segment.tag.attr["x2"] = to!string(q.getX());
- 			segment.tag.attr["y2"] = to!string(q.getY());
- 			
- 			return segment;
- 		}
-
 	 	string prettyPrint(Document doc){
 	 		string[] strings = doc.pretty(4);
 	 		string s;
@@ -59,52 +104,32 @@ class SVGBuilder : IViewBuilder!string{
 	 		}
 	 		return strip(s);
 	 	}
-	 
-	public:
-		string build(ObjectType) (ObjectType obj){
+	}
+	
+	
+	public {
+		string build(ShapeT : Shape)(ShapeComposite!ShapeT obj){
 			auto svg = new Document(new Tag("svg"));
+			 
+			foreach(ShapeT s; obj){
+				svg ~= componentBuilder.build(s);
+			}
 			
-			svg ~= buildComponent(obj);
 			return svgHeader ~ "\n" ~ prettyPrint(svg);
 		}	
-	
+		
+		string build(ShapeT) (ShapeT obj){
+			auto svg = new Document(new Tag("svg"));
+			
+			svg ~= componentBuilder.build(obj);
+			
+			return svgHeader ~ "\n" ~ prettyPrint(svg);
+		}
+	}
 	
 }
 
-
-unittest {
-	Segment s = new Segment(new Point(10, 0), new Point (200, 110));
-	SVGBuilder svgBuilder = new SVGBuilder();
 	
-	string expectedString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
-<svg>
-    <line y1=\"0\" x1=\"10\" y2=\"110\" x2=\"200\" />
-</svg>";
-
-	assertEqual(svgBuilder.build(s), expectedString );
-
-}	
-
-unittest {
-	Segment s1 = new Segment(new Point(10, 0), new Point (200, 110));
-	Segment s2 = new Segment(new Point(10, 10), new Point (200, 120));
-	ShapeComposite!Segment s = new ShapeComposite!Segment();
-	s.add(s1);
-	s.add(s2);
-	
-	SVGBuilder svgBuilder = new SVGBuilder();
-	
-	string expectedString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
-<svg>
-    <g>
-        <line y1=\"0\" x1=\"10\" y2=\"110\" x2=\"200\" />
-        <line y1=\"10\" x1=\"10\" y2=\"120\" x2=\"200\" />
-    </g>
-</svg>";
-
-	assertEqual(svgBuilder.build(s), expectedString );
-
-}	
 
 
 

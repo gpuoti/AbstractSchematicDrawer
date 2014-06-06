@@ -66,6 +66,10 @@ class Segment : Vector, Measurable1D, Shape {
 			return [getOrigin(), getArrow()];
 		}
 		
+		override void scale(double factor){
+			super.scale(factor);
+		}
+		
 		
 		
 		
