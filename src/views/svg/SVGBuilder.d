@@ -1,6 +1,6 @@
 import Segment;
 import Shape;
-import ViewBuilder;
+import ShapeChangeListener;
 import SVGStroke;
 import std.xml;
 import std.stdio;
@@ -10,7 +10,7 @@ import std.string;
 
 
 
-class SVGBuilderComponent : IViewBuilder!(Element){
+class SVGBuilderComponent : ModelChangeListener!Segment{
 	
 	static bool isManaged(Type)() {
 		return is(Type : Segment);
@@ -46,17 +46,16 @@ class SVGBuilderComponent : IViewBuilder!(Element){
 		return segment; 
 	
 	}
+	
+	void update(Segment s){
+		
+	}
 
 }
   
 unittest {
 	Segment s = new Segment(new Point(10, 0), new Point (200, 110));
 	SVGBuilderComponent svgBuilder = new SVGBuilderComponent();
-	
-	string expectedString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
-<svg>
-    <line stroke-width=\"1\" stroke=\"#000\" y1=\"0\" x1=\"10\" y2=\"110\" x2=\"200\" />
-</svg>";
 	
 	Element elem = svgBuilder.build(s);
 	
@@ -88,7 +87,7 @@ unittest {
 
 
 
-class SVGBuilder : IViewBuilder!(string){
+class SVGBuilder(ShapeT) : ModelChangeListener!(ShapeComposite!ShapeT){
 	private {
 	
 	 	static immutable svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";

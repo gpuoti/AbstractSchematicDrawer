@@ -139,6 +139,8 @@ class Polyline : ShapeComposite!Segment, Measurable1D {
 			return points;
 		}
 		
+		
+		
 }
 
 
@@ -164,5 +166,24 @@ unittest {
 	
 	assertEqual(p.pointAtLen(p.len()), new Point(5,-1));
 		
+}
+
+unittest {
+	Polyline p1 = new Polyline(new Point(0, 0), new Point(4, 4) );
+	p1.add(new Segment(new Point(4,4), new Point(6, 4.5)) );
+	p1.add(new Segment(new Point(6,4.5), new Point(5, 5)) );
+	Polyline p2 = new Polyline(new Point(0, 1), new Point(4, 5) );
+	p2.add(new Segment(new Point(4,5), new Point(6, 4.50003)) );
+	p2.add(new Segment(new Point(6,4.50003), new Point(5, 6)) );
+	import std.algorithm; 
+	
+	auto v1 = p1.vertices();
+	auto v2 = p2.vertices();
+	
+	writeln(p1);
+	auto commonVertices = p1.commonVertices(p2);
+	writeln(to!string(commonVertices));
+	assertTrue(commonVertices.length == 1);
+	assertEqual(commonVertices[0], new Point(6.0000015, 4.50001) );
 }
 

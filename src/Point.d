@@ -86,15 +86,13 @@ public:
 		return p2 && p2.distance(this)<eps ;		
 	}
 	
+	
 	/** Get a string rappresentation of the vector. */
 	override string toString(){
 		string s;
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
 	}
-	
-	
-	
 
 }
 

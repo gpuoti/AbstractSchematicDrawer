@@ -1,5 +1,7 @@
 import Measurable1D;
 import Vector;
+import ShapeChangeListener;
+import Observable;
 import Shape : Shape;
 
 import std.stdio;
@@ -71,8 +73,7 @@ class Segment : Vector, Measurable1D, Shape {
 		}
 		
 		
-		
-		
+		mixin(MakeObservable!(ModelChangeListener!Segment, Segment)("segmentListeners"));
 } 
 
 

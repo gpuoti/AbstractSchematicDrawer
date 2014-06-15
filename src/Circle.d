@@ -6,6 +6,7 @@ import Point;
 import Segment;
 import Vector; 
 
+import ShapeChangeListener;
 
 import std.stdio;
 import std.math;
@@ -83,6 +84,20 @@ class Circle : Shape, Movable, Scalable{
 	void scale(double factor){
 		r *= factor;
 	}
+	
+	private {
+		ModelChangeListener!Circle listeners[];
+	}
+	
+	public {
+	
+		void registerListener(ModelChangeListener!Circle listener){
+			listeners ~= listener;
+		}
+
+	}
+	
+	
 	
 	
 }

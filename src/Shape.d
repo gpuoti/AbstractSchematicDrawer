@@ -2,15 +2,19 @@ import std.stdio;
 import Point;
 import Vector;
 import Segment;
+import Observable;
+import ShapeChangeListener;
 import std.string;
 import std.container;
 import std.conv;
 import std.exception;
+import std.algorithm;
 
 import std.traits;
 
 version(unittest){
 	import dunit.toolkit;
+	import dunit.mockable;
 }
 
 /** Shape objects are represents objects that can be checked for inclusion of other shapes. 
@@ -25,7 +29,6 @@ version(unittest){
 	In addition any shape must be checkable for point inclusion in its perimeter. */
 
 interface Shape: Movable, Scalable{
-		
 		Point[] vertices();
 		bool contains(Point p);
 		bool containsPoint(Point p);
@@ -37,6 +40,23 @@ interface Shape: Movable, Scalable{
 			
 			return i==vertices.length;
 		}
+		
+		final Point[] commonVertices(Shape other){
+			Point[] commons;
+			Point[] vertices = vertices();
+			Point[] otherVertices = other.vertices();
+			
+			foreach(Point v; uniq(vertices)){
+				if(canFind(otherVertices, v))
+					commons ~= new Point(v);
+					
+			}
+			
+			return commons;
+		}
+		
+		mixin Mockable!Shape;
+		
 }
 
 
@@ -46,6 +66,7 @@ if (__traits(hasMember, ShapeT, "vertices") ) {
 	
 	protected:
 		ShapeT shapes[];
+		
 		
 	public:
 
@@ -99,6 +120,11 @@ if (__traits(hasMember, ShapeT, "vertices") ) {
 			return i==vertices.length;
 		}	
 		
+		alias ShapeComposite!ShapeT MyType;
+		alias ModelChangeListener!(MyType) CompositeListener;
+		mixin(MakeObservable!(CompositeListener, MyType)("compositeListeners") );
+		
+		
 		int opApply(int delegate(ref ShapeT) f){
 			foreach(ShapeT s; shapes){
 				f(s);
@@ -122,5 +148,44 @@ unittest{
 	foreach(Segment seg; s){
 		writeln(to!string(s));
 	}
+}
+
+
+
+
+
+unittest{
+	class DummyShape : Shape{
+	private:
+		Point v;
+			
+	public:
+		this(Point p){
+			v = p;
+		}	
+		Point[] vertices (){ return [v];}
+		bool contains(Point p){return p.distance(v) < 1;}
+		bool containsPoint(Point p){return p == v;}
+		void move(Vector v){}
+		void scale(double factor){}
+		
+	}
+	
+	//MockedShapeCompositeChangeListener mockedListener = new MockedShapeCompositeChangeListener;
+	auto shape1 = new DummyShape(new Point(0,0));
+	auto shape2 = new DummyShape(new Point(1,1));
+	
+	ShapeComposite!Shape composite = new ShapeComposite!Shape();
+	
+	composite.add(shape1);
+	composite.add(shape2);
+	
+	composite.containsShape(shape1);
+	composite.containsPoint(new Point(0, 10)).assertFalse;
+	composite.containsPoint(new Point(0, 0)).assertTrue;
+	composite.containsPoint(new Point(1, 1)).assertTrue;
+	
+	
+	
 }
 
