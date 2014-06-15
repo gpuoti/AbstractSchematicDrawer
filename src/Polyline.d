@@ -141,6 +141,8 @@ class Polyline : ShapeComposite!Segment, Measurable1D {
 		
 		
 		
+		
+		
 }
 
 
@@ -185,5 +187,58 @@ unittest {
 	writeln(to!string(commonVertices));
 	assertTrue(commonVertices.length == 1);
 	assertEqual(commonVertices[0], new Point(6.0000015, 4.50001) );
+}
+
+unittest {
+	Polyline p1 = new Polyline(new Point(0, 0), new Point(4, 4) );
+	p1.add(new Segment(new Point(4,4), new Point(6, 4)) );
+	p1.add(new Segment(new Point(6,4), new Point(5, 5)) );
+	
+	Polyline p2 = new Polyline(new Point(0, -1), new Point(4, -2) );
+	p2.add(new Segment(new Point(4,-2), new Point(3,-1)) );
+	
+	auto v1 = p1.vertices();
+	auto v2 = p2.vertices();
+	
+	writeln(p1);
+	auto commonVertices = p1.commonVertices(p2);
+	writeln(to!string(commonVertices));
+	assertTrue(commonVertices.length == 0);
+}
+
+unittest {
+	Polyline p1 = new Polyline(new Point(0, 0), new Point(4, 4) );
+	p1.add(new Segment(new Point(4,4), new Point(6, 4)) );
+	p1.add(new Segment(new Point(6,4), new Point(5, 5)) );
+	
+	Polyline p2 = new Polyline(new Point(0, -1), new Point(4, -2) );
+	p2.add(new Segment(new Point(4,-2), new Point(3,1)) );
+	
+	auto v1 = p1.vertices();
+	auto v2 = p2.vertices();
+	
+	writeln(p1);
+	auto commonVertices = p1.commonVertices(p2);
+	writeln(to!string(commonVertices));
+	assertTrue(commonVertices.length == 0);
+}
+
+unittest {
+	Polyline p1 = new Polyline(new Point(0, 0), new Point(4, 4) );
+	p1.add(new Segment(new Point(4,4), new Point(6, 4)) );
+	p1.add(new Segment(new Point(6,4), new Point(5, 5)) );
+	
+	Polyline p2 = new Polyline(new Point(0, -1), new Point(4, -2) );
+	p2.add(new Segment(new Point(4,-2), new Point(3,1)) );
+	p2.add(new Segment(new Point(3,1), new Point(4,4)) );
+	
+	auto v1 = p1.vertices();
+	auto v2 = p2.vertices();
+	
+	writeln(p1);
+	auto commonVertices = p1.commonVertices(p2);
+	writeln(to!string(commonVertices));
+	assertTrue(commonVertices.length ==1);
+	assertEqual(commonVertices[0], new Point(4, 4) );
 }
 

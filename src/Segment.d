@@ -2,7 +2,7 @@ import Measurable1D;
 import Vector;
 import ShapeChangeListener;
 import Observable;
-import Shape : Shape;
+import Shape;
 
 import std.stdio;
 import std.math;
@@ -70,6 +70,10 @@ class Segment : Vector, Measurable1D, Shape {
 		
 		override void scale(double factor){
 			super.scale(factor);
+		}
+		
+		override Rectangle bounds(){
+			return new Rectangle(getOrigin(), getArrow());
 		}
 		
 		

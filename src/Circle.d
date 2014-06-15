@@ -5,6 +5,7 @@ import Scalable;
 import Point;
 import Segment;
 import Vector; 
+import Rectangle;
 
 import ShapeChangeListener;
 
@@ -83,6 +84,10 @@ class Circle : Shape, Movable, Scalable{
 	/** Circle objects are Scalable so, scale method can be called to scale its radius */
 	void scale(double factor){
 		r *= factor;
+	}
+	
+	override Rectangle bounds(){
+		return new Rectangle(new Point(c.getX()-r, c.getY() + r), new Point(c.getX() + r, c.getY() -r));
 	}
 	
 	private {

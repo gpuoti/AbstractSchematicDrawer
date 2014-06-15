@@ -65,6 +65,22 @@ public:
 		return this;
 	}
 	
+	/** Return the leftmost point between this and the other one */
+	Point maxX(Point other){
+		if(getX()< other.getX()){
+			return other;
+		}
+		return this;
+	}
+	
+	/** Return the lower point between this and the other one */
+	Point maxY(Point other){
+		if(getY() < other.getY()){
+			return other;
+		}
+		return this;
+	}
+	
 	/** Calculate the distance between the point to the other given as parameter */
 	double distance(Point other){
 		double d = pow( (x-other.x), 2) + pow( (y-other.y), 2);
@@ -92,6 +108,16 @@ public:
 		string s;
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
+	}
+	import std.traits;
+	
+	Point opBinary(string op, T)(T n) if (isNumeric!T) {
+		static if (op == "*"){
+			x *= n;
+			y *= n;
+			return this;
+		}
+		else static assert(0, "Operator "~op~" not implemented");
 	}
 
 }
@@ -140,3 +166,14 @@ unittest{
 	assertTrue(p1 != p2);
 }
 
+unittest{
+	import dunit.toolkit;
+	Point p1 = new Point (1,1);
+	Point p2 = new Point (-1,-1);
+	Point p3 = new Point (-1,3);
+	
+	assertEqual(p1 * (1.5), new Point(1.5,1.5));
+	assertEqual(p2 * (1.5), new Point(-1.5,-1.5));
+	assertEqual(p3 * (1.5), new Point(-1.5,4.5));
+
+}
