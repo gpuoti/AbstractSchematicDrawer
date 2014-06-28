@@ -29,7 +29,7 @@ public:
 	}
 	
 	/** Allows to construct copies of the same point. That is Overlapped points are allowed. */
-	this(Point other){
+	this(const ref Point other){
 		x = other.x;
 		y = other.y;
 	}  
@@ -102,9 +102,15 @@ public:
 		return p2 && p2.distance(this)<eps ;		
 	}
 	
+	/** Two points are considered equal if their distance is less then epsilon */
+	bool equals(Object other){
+		Point p2 = cast(Point)(other);
+		return p2 && p2.distance(this)<eps ;		
+	}
+	
 	
 	/** Get a string rappresentation of the vector. */
-	override string toString(){
+	override string toString() const {
 		string s;
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
@@ -123,6 +129,16 @@ public:
 }
 
 
+unittest {
+	import dunit.toolkit;
+	import std.conv;
+	import std.stdio;
+	
+	Point pminx = new Point(0,9);
+	Point pmaxx = new Point(9,0);
+	
+	pminx.maxX(pmaxx).assertEqual(pmaxx);
+}
 
 
 unittest{

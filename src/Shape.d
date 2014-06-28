@@ -18,6 +18,9 @@ version(unittest){
 	import dunit.mockable;
 }
 
+
+
+
 /** Shape objects are represents objects that can be checked for inclusion of other shapes. 
 
 	Inclusion relationship is implemented as a final method (containsShape) of the shape interface using the following definition:

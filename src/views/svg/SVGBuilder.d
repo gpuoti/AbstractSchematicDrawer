@@ -21,8 +21,6 @@ class SVGBuilderComponent : ModelChangeListener!Segment{
 	/** by default, this builder does nothing.
 		That is it ignore call with unsupported object type (template specialization not available) */
 	Element build(ObjectType) (ObjectType obj) if (!isManaged!ObjectType()) {
-		writeln("in SVGBuilderComponent");
-		writeln(to!string(obj));
 		return new Element("desc", "undefined rendering" ); 
 	}
 

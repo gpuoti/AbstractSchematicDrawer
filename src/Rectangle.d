@@ -18,15 +18,18 @@ class Rectangle : Shape {
 		p = p1.minX(p2);
 		q = p1.minY(p2);
 		
-		if(p==q){
-			writeln("inverting");
+		if(p.equals(q)){ 
 			auto tmp = new Point(p1.getX(), p2.getY());
 			p2 = new Point(p2.getX(), p1.getY());
 			p1 = tmp;
 			p = p1.minX(p2);
 			q = p1.minY(p2);
-			writeln(to!string(p1) ~  "  " ~to!string(p2));
 		}
+	}
+	
+	this(const ref Rectangle other){
+		p = new Point(other.p);
+		q = new Point(other.q);
 	}
 	
 	Point[] vertices(){
@@ -58,13 +61,34 @@ class Rectangle : Shape {
 		q = q* factor;
 	}
 	
-	override string toString(){
-		return "Rectangle  [" ~ to!string(p) ~ "  " ~ to!string(q);
+	override string toString() const {
+		return "Rectangle  [ " ~ to!string(p) ~ "  " ~ to!string(q) ~ " ]";
 	}
 	
 	override Rectangle bounds(){
 		return this;
 	}
+	
+	double bottom(){
+		return q.getY();
+	}
+	
+	double top(){
+		return p.getY();
+	}
+	
+	double left(){
+		return p.getX();
+	}
+	
+	double right(){
+		return q.getX();
+	}
+	
+	bool collides(Rectangle r){
+		return (left <= r.right && r.left <= right && top >= r.bottom && r.top >= bottom);
+	}
+	
 	
 }
 
@@ -84,7 +108,6 @@ unittest {
 	
 	Rectangle r = new Rectangle(p1,p2);
 	
-	writeln(to!string(r));
 	r.vertices().assertHasValue(p1);
 	r.vertices().assertHasValue(p2);
 	r.vertices().assertHasValue(q1);
@@ -96,4 +119,14 @@ unittest {
 	r.containsPoint(new Point(0,-1)).assertTrue();
 	r.containsPoint(new Point(1,-1.1)).assertFalse();
 	
+}
+
+unittest{
+	import dunit.toolkit;
+	Rectangle r = new Rectangle(new Point(0, 0), new Point(1, 1));
+	
+	auto collidingRegion = new Rectangle(new Point(-0.1, -0.9), new Point(0.1, 0.9) );
+	auto notCollidingRegion = new Rectangle(new Point(-2, -2), new Point(-1, -1) );
+	
+	r.collides(collidingRegion).assertTrue;
 }

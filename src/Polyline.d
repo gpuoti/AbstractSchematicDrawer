@@ -182,9 +182,7 @@ unittest {
 	auto v1 = p1.vertices();
 	auto v2 = p2.vertices();
 	
-	writeln(p1);
 	auto commonVertices = p1.commonVertices(p2);
-	writeln(to!string(commonVertices));
 	assertTrue(commonVertices.length == 1);
 	assertEqual(commonVertices[0], new Point(6.0000015, 4.50001) );
 }
@@ -200,9 +198,7 @@ unittest {
 	auto v1 = p1.vertices();
 	auto v2 = p2.vertices();
 	
-	writeln(p1);
 	auto commonVertices = p1.commonVertices(p2);
-	writeln(to!string(commonVertices));
 	assertTrue(commonVertices.length == 0);
 }
 
@@ -217,9 +213,7 @@ unittest {
 	auto v1 = p1.vertices();
 	auto v2 = p2.vertices();
 	
-	writeln(p1);
 	auto commonVertices = p1.commonVertices(p2);
-	writeln(to!string(commonVertices));
 	assertTrue(commonVertices.length == 0);
 }
 
@@ -235,9 +229,7 @@ unittest {
 	auto v1 = p1.vertices();
 	auto v2 = p2.vertices();
 	
-	writeln(p1);
 	auto commonVertices = p1.commonVertices(p2);
-	writeln(to!string(commonVertices));
 	assertTrue(commonVertices.length ==1);
 	assertEqual(commonVertices[0], new Point(4, 4) );
 }

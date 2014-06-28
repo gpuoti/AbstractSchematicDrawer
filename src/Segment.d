@@ -46,7 +46,8 @@ class Segment : Vector, Measurable1D, Shape {
 		
 		/** As Measurable1D you can get the point on the segment given a percentual of it's lenght */
 		Point pointAtLen(double l){
-			Point p = new Point(getOrigin());
+			Point p = getOrigin();
+			p = new Point(p);
 			Vector delta = new Vector( new Point(0,0), new Point(dx(), dy()) );
 			delta.scale(normalizedLen(l));
 			p.move(delta);
