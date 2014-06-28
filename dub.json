@@ -1,0 +1,9 @@
+{
+	"name" : "AbstractSchematicDrawer",
+	"description" : "A minimal D bundle.",
+	"dependencies" : {
+	},
+	"targetPath" : "bin",
+	"targetType" : "executable",
+	"buildOptions" : ["unittests"]
+}

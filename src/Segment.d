@@ -1,6 +1,8 @@
 import Measurable1D;
 import Vector;
-import Shape : Shape;
+import ShapeChangeListener;
+import Observable;
+import Shape;
 
 import std.stdio;
 import std.math;
@@ -44,7 +46,8 @@ class Segment : Vector, Measurable1D, Shape {
 		
 		/** As Measurable1D you can get the point on the segment given a percentual of it's lenght */
 		Point pointAtLen(double l){
-			Point p = new Point(getOrigin());
+			Point p = getOrigin();
+			p = new Point(p);
 			Vector delta = new Vector( new Point(0,0), new Point(dx(), dy()) );
 			delta.scale(normalizedLen(l));
 			p.move(delta);
@@ -66,9 +69,16 @@ class Segment : Vector, Measurable1D, Shape {
 			return [getOrigin(), getArrow()];
 		}
 		
+		override void scale(double factor){
+			super.scale(factor);
+		}
+		
+		override Rectangle bounds(){
+			return new Rectangle(getOrigin(), getArrow());
+		}
 		
 		
-		
+		mixin(MakeObservable!(ModelChangeListener!Segment, Segment)("segmentListeners"));
 } 
 
 

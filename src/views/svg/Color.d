@@ -1,0 +1,9 @@
+class SVGColor {
+	private {
+		
+	}
+}
+
+
+unittest {
+}

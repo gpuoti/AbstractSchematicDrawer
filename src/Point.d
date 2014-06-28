@@ -15,8 +15,12 @@ private:
 	double y;
 	
 	immutable static double eps = 0.0001;
+	
+	
 
 public:
+	const static Point ORIGIN = new Point(0,0);
+	
 	
 	/** construct a Point given its coordinates */ 
 	this(double coordX, double coordY){		
@@ -25,10 +29,15 @@ public:
 	}
 	
 	/** Allows to construct copies of the same point. That is Overlapped points are allowed. */
-	this(Point other){
+	this(const ref Point other){
 		x = other.x;
 		y = other.y;
 	}  
+	
+	this(){
+		this(0,0);
+	}
+	
 	
 	/** Allows to read point's X coordinate.  */
 	double getX(){
@@ -40,6 +49,7 @@ public:
 		return y;
 	}
 	
+	/** Return the leftmost point between this and the other one */
 	Point minX(Point other){
 		if(getX() > other.getX()){
 			return other;
@@ -47,8 +57,25 @@ public:
 		return this;
 	}
 	
+	/** Return the lower point between this and the other one */
 	Point minY(Point other){
 		if(getY() > other.getY()){
+			return other;
+		}
+		return this;
+	}
+	
+	/** Return the leftmost point between this and the other one */
+	Point maxX(Point other){
+		if(getX()< other.getX()){
+			return other;
+		}
+		return this;
+	}
+	
+	/** Return the lower point between this and the other one */
+	Point maxY(Point other){
+		if(getY() < other.getY()){
 			return other;
 		}
 		return this;
@@ -69,23 +96,49 @@ public:
 		y += v.dy(); 
 	}
 
-	
+	/** Two points are considered equal if their distance is less then epsilon */
 	override bool opEquals(Object other){
 		Point p2 = cast(Point)(other);
 		return p2 && p2.distance(this)<eps ;		
 	}
 	
+	/** Two points are considered equal if their distance is less then epsilon */
+	bool equals(Object other){
+		Point p2 = cast(Point)(other);
+		return p2 && p2.distance(this)<eps ;		
+	}
+	
+	
 	/** Get a string rappresentation of the vector. */
-	override string toString(){
+	override string toString() const {
 		string s;
 		s = std.string.format( "(%.1f, %.1f)", x, y );
 		return s;
 	}
+	import std.traits;
 	
+	Point opBinary(string op, T)(T n) if (isNumeric!T) {
+		static if (op == "*"){
+			x *= n;
+			y *= n;
+			return this;
+		}
+		else static assert(0, "Operator "~op~" not implemented");
+	}
 
 }
 
 
+unittest {
+	import dunit.toolkit;
+	import std.conv;
+	import std.stdio;
+	
+	Point pminx = new Point(0,9);
+	Point pmaxx = new Point(9,0);
+	
+	pminx.maxX(pmaxx).assertEqual(pmaxx);
+}
 
 
 unittest{
@@ -129,3 +182,14 @@ unittest{
 	assertTrue(p1 != p2);
 }
 
+unittest{
+	import dunit.toolkit;
+	Point p1 = new Point (1,1);
+	Point p2 = new Point (-1,-1);
+	Point p3 = new Point (-1,3);
+	
+	assertEqual(p1 * (1.5), new Point(1.5,1.5));
+	assertEqual(p2 * (1.5), new Point(-1.5,-1.5));
+	assertEqual(p3 * (1.5), new Point(-1.5,4.5));
+
+}

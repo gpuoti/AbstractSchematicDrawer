@@ -21,5 +21,6 @@
 "src/Rotable.d"
 "src/Scalable.d"
 "src/Segment.d"
-"src/Shape.d"
+"src/Shape.d" 
 "src/Vector.d"
+"src/Circle.d"
